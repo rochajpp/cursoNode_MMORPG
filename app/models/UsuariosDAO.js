@@ -15,10 +15,21 @@ UsuariosDAO.prototype.autenticar = async function(usuario, req, res){
     const result = await collection.find({usuario: usuario.usuario}).toArray();
     
     if(result[0] != undefined){
-        req.session.autorizado = true;
+        if(result[0].senha == usuario.senha){       
+            req.session.autorizado = true;
+            req.session.usuario = result[0].usuario;
+            req.session.casa = result[0].casa;
+
+            res.redirect('/jogo')
+        } else{
+            res.render('index', {credencialErr: true, validacao: {}});
+        }
     }else{
-        
+        res.render('index', {credencialErr: true, validacao: {}})
     }
+
+
+    this._context.desconnectDb();
 }
 
 module.exports = () => {
